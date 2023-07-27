@@ -2,13 +2,9 @@ package servertiming
 
 import (
 	"fmt"
-	"net/http"
 	"regexp"
 	"strings"
 	"sync"
-	"time"
-
-	"github.com/golang/gddo/httputil/header"
 )
 
 // HeaderKey is the specified key for the Server-Timing header.
@@ -33,39 +29,6 @@ type Header struct {
 	// ONLY NEEDS TO BE SET WHEN working with Metrics directly. If using
 	// the functions on the struct, the lock is managed automatically.
 	sync.Mutex
-}
-
-// ParseHeader parses a Server-Timing header value.
-func ParseHeader(input string) (*Header, error) {
-	// Split the comma-separated list of metrics
-	rawMetrics := header.ParseList(headerParams(input))
-
-	// Parse the list of metrics. We can pre-allocate the length of the
-	// comma-separated list of metrics since at most it will be that and
-	// most likely it will be that length.
-	metrics := make([]*Metric, 0, len(rawMetrics))
-	for _, raw := range rawMetrics {
-		var m Metric
-		m.Name, m.Extra = header.ParseValueAndParams(headerParams(raw))
-
-		// Description
-		if v, ok := m.Extra[paramNameDesc]; ok {
-			m.Desc = v
-			delete(m.Extra, paramNameDesc)
-		}
-
-		// Duration. This is treated as a millisecond value since that
-		// is what modern browsers are treating it as. If the parsing of
-		// an integer fails, the set value remains in the Extra field.
-		if v, ok := m.Extra[paramNameDur]; ok {
-			m.Duration, _ = time.ParseDuration(v + "ms")
-			delete(m.Extra, paramNameDur)
-		}
-
-		metrics = append(metrics, &m)
-	}
-
-	return &Header{Metrics: metrics}, nil
 }
 
 // NewMetric creates a new Metric and adds it to this header.
@@ -103,16 +66,6 @@ const (
 	paramNameDesc = "desc"
 	paramNameDur  = "dur"
 )
-
-// headerParams is a helper function that takes a header value and turns
-// it into the expected argument format for the httputil/header library
-// functions..
-func headerParams(s string) (http.Header, string) {
-	const key = "Key"
-	return http.Header(map[string][]string{
-		key: {s},
-	}), key
-}
 
 var reNumber = regexp.MustCompile(`^\d+\.?\d*$`)
 

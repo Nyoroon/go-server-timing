@@ -1,7 +1,6 @@
 package servertiming
 
 import (
-	"reflect"
 	"testing"
 	"time"
 )
@@ -76,21 +75,6 @@ var headerCases = []struct {
 		},
 		`sql-1;desc="MySQL; lookup Server";dur=100.1`,
 	},
-}
-
-func TestParseHeader(t *testing.T) {
-	for _, tt := range headerCases {
-		t.Run(tt.HeaderValue, func(t *testing.T) {
-			h, err := ParseHeader(tt.HeaderValue)
-			if err != nil {
-				t.Fatalf("error parsing header: %s", err)
-			}
-
-			if !reflect.DeepEqual(h.Metrics, tt.Metrics) {
-				t.Fatalf("received, expected:\n\n%#v\n\n%#v", h.Metrics, tt.Metrics)
-			}
-		})
-	}
 }
 
 func TestHeaderString(t *testing.T) {

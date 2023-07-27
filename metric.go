@@ -12,14 +12,14 @@ import (
 // The easiest way to use the Metric is to use NewMetric and chain it. This
 // results in a single line defer at the top of a function time a function.
 //
-//   timing := FromContext(r.Context())
-//   defer timing.NewMetric("sql").Start().Stop()
+//	timing := FromContext(r.Context())
+//	defer timing.NewMetric("sql").Start().Stop()
 //
 // For timing around specific blocks of code:
 //
-//   m := timing.NewMetric("sql").Start()
-//   // ... run your code being timed here
-//   m.Stop()
+//	m := timing.NewMetric("sql").Start()
+//	// ... run your code being timed here
+//	m.Stop()
 //
 // A metric is expected to represent a single timing event. Therefore,
 // no functions on the struct are safe for concurrency by default. If a single
