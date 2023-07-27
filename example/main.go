@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/mitchellh/go-server-timing"
+	"github.com/Nyoroon/go-server-timing"
 )
 
 func init() {
